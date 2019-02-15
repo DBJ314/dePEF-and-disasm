@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	int refOffset;
 	if(argc<2){
 		fprintf(stderr, usageString, argv[0], argv[0]);
-		return 0;
+		return 1;
 	}
 	for(argPos = 1; argPos<argc; argPos++){
 		if(argv[argPos][0]=='-'){

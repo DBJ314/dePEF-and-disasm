@@ -48,7 +48,7 @@ OSStatus mPrintSection(FILE* printLoc, int sectionNumber, int size){
 		return 1;
 	}
 	curObj = curS->objectLL;
-	while(offset<size){
+	while(offset<size&&curObj!=0){
 		if(curObj==0){
 			printRaw(printLoc, curS->content, offset, size-1);
 			return 0;

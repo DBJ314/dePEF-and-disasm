@@ -31,6 +31,10 @@ OSStatus registerObject(int sectionNumber, int offset){
 		fprintf(stderr,"invalid section number\n");
 		return 1;
 	}
+	if(offset>=currentSection->size){
+		fprintf(stderr,"object past section end\n");
+		return 1;
+	}
 	if(getObject(currentSection,offset)){
 		fprintf(stderr,"object already exists\n");
 		return 1;
@@ -298,7 +302,7 @@ int getSectVal(int sectionNumber, int offset){
 		return 0;
 	}
 	if(offset<0 || offset+3 > curS->size){
-		fprintf(stderr, "error: getSectVal() index out of bounds (%d, 0x%08x)\n", sectionNumber, offset);
+		//fprintf(stderr, "error: getSectVal() index out of bounds (%d, 0x%08x)\n", sectionNumber, offset);
 		return 0;
 	}
 	result |= ((curS->content[offset])<<24)&0xFF000000;
@@ -601,6 +605,9 @@ int isModuleDoneWithSection(struct DisasmModule* curM, struct Section* curS){
 int getObjectEnd(struct Object* curObj){
 	struct Section* curS = curObj->parent;
 	struct Object* nextObj = curObj->next;
+	if(curObj==0){
+		return 0x80000000;
+	}
 	if(nextObj != 0){
 		return nextObj->offset-1;
 	}

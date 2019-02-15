@@ -51,6 +51,7 @@ void mAnalyze(int sectionNumber, int size){
 	}
 	curObj = curS->objectLL;
 	if(curObj == 0){
+		markSectionAsProcessed(sectionNumber, kMyModName);
 		return;
 	}
 	while(!done){

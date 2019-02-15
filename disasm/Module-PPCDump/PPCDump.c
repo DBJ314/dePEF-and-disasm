@@ -61,6 +61,7 @@ void mAnalyze(int sectionNumber, int size){
 	}
 	curObj = curS->objectLL;
 	if(curObj == 0){
+		markSectionAsProcessed(sectionNumber, kMyModName);
 		return;
 	}
 	while(!done){
@@ -96,7 +97,7 @@ OSStatus mPrintSection(FILE* printLoc, int sectionNumber, int size){
 		return 1;
 	}
 	curObj = curS->objectLL;
-	while(offset<size){
+	while(offset<size&&curObj!=0){
 		if(curObj==0){
 			printRaw(printLoc, curS->content, offset, size-1);
 			return 0;
@@ -360,9 +361,13 @@ void analyzeObject(struct Section* curS, struct Object* curObj){
 	while(curOffset+3<=maxOffset){
 		if(analyzeLocation(curS, curObj, curOffset, getSectVal(curS->number, curOffset))){
 			maxOffset = getObjectEnd(curObj);//if something interesting happened, recalc the object end
+			if(maxOffset<0 || maxOffset >= curS->size){
+				return;
+			}
 		}
 		curOffset+=4;
 	}
+	markObjectAsProcessed(curS->number, curObj->offset, kMyModName);
 }
 
 /* returns true if the object might have been shortened */
@@ -426,7 +431,7 @@ int analyzeLocation(struct Section* curS, struct Object* curObj, int offset, int
 		return returnVal;
 	}
 	branchDest += offset;
-	if(offset<0 || offset >= curS->size){
+	if(branchDest<0 || branchDest >= curS->size){
 		fprintf(stderr, "branch offset out of range of section\n");
 		return returnVal;
 	}
